@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AR Experience</title>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image.prod.js"></script>
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { overflow: hidden; }
+      #overlay {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.88);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        color: white;
+        font-family: sans-serif;
+        text-align: center;
+        padding: 2rem;
+        cursor: pointer;
+      }
+      #overlay h1 { font-size: 2rem; margin-bottom: 1rem; }
+      #overlay p { font-size: 1.1rem; opacity: 0.8; max-width: 300px; line-height: 1.5; }
+      #tap-icon {
+        font-size: 3.5rem;
+        margin-bottom: 1.5rem;
+        animation: pulse 1.5s infinite;
+      }
+      @keyframes pulse {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.15); opacity: 0.7; }
+      }
+    </style>
+  </head>
+  <body>
+
+    <div id="overlay">
+      <h1>Toque para come&#231;ar</h1>
+      <p>Aponte a c&#226;mara para o marcador para ver a experi&#234;ncia</p>
+    </div>
+
+    <a-scene
+      mindar-image="imageTargetSrc: ./targets.mind; autoStart: false;"
+      vr-mode-ui="enabled: false"
+      device-orientation-permission-ui="enabled: false"
+    >
+      <a-assets>
+        <video
+          id="myvideo"
+          src="./Login.mp4"
+          preload="auto"
+          muted
+          playsinline
+          loop
+        ></video>
+      </a-assets>
+
+      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+      <a-entity mindar-image-target="targetIndex: 0">
+        <a-video
+          src="#myvideo"
+          position="0 0 0"
+          height="0.55"
+          width="1"
+        ></a-video>
+      </a-entity>
+    </a-scene>
+
+    <script>
+      var overlay = document.getElementById("overlay");
+      var video = document.getElementById("myvideo");
+      var sceneEl = document.querySelector("a-scene");
+
+      overlay.addEventListener("click", function () {
+        overlay.style.display = "none";
+        video.load();
+        video.play().catch(function() {});
+        sceneEl.components["mindar-image"].startAR();
+      });
+    </script>
+
+  </body>
+</html>
