@@ -3,18 +3,41 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>AR Experience</title>
-    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image.prod.js"></script>
-    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
-      body { overflow: hidden; }
+      body { overflow: hidden; background: #000; }
+
+      #loading {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: #000;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 99999;
+        color: white;
+        font-family: sans-serif;
+        text-align: center;
+        padding: 2rem;
+      }
+      #loading p { font-size: 1.1rem; opacity: 0.7; margin-top: 1.2rem; }
+      .spinner {
+        width: 48px; height: 48px;
+        border: 4px solid rgba(255,255,255,0.15);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+
       #overlay {
         position: fixed;
         top: 0; left: 0;
         width: 100%; height: 100%;
         background: rgba(0, 0, 0, 0.88);
-        display: flex;
+        display: none;
         flex-direction: column;
         align-items: center;
         justify-content: center;
@@ -27,23 +50,37 @@
       }
       #overlay h1 { font-size: 2rem; margin-bottom: 1rem; }
       #overlay p { font-size: 1.1rem; opacity: 0.8; max-width: 300px; line-height: 1.5; }
-      #tap-icon {
-        font-size: 3.5rem;
+      #tap-pulse {
+        width: 64px; height: 64px;
+        border: 3px solid rgba(255,255,255,0.6);
+        border-radius: 50%;
         margin-bottom: 1.5rem;
-        animation: pulse 1.5s infinite;
+        animation: ripple 1.5s infinite;
       }
-      @keyframes pulse {
-        0%, 100% { transform: scale(1); opacity: 1; }
-        50% { transform: scale(1.15); opacity: 0.7; }
+      @keyframes ripple {
+        0%   { transform: scale(0.9); opacity: 1; }
+        100% { transform: scale(1.3); opacity: 0; }
       }
     </style>
   </head>
   <body>
 
+    <!-- Shown immediately while scripts load -->
+    <div id="loading">
+      <div class="spinner"></div>
+      <p>A carregar...</p>
+    </div>
+
+    <!-- Shown after scripts are ready, waiting for user tap -->
     <div id="overlay">
+      <div id="tap-pulse"></div>
       <h1>Toque para come&#231;ar</h1>
       <p>Aponte a c&#226;mara para o marcador para ver a experi&#234;ncia</p>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image.prod.js"></script>
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
     <a-scene
       mindar-image="imageTargetSrc: ./targets.mind; autoStart: false;"
@@ -74,9 +111,16 @@
     </a-scene>
 
     <script>
+      var loading = document.getElementById("loading");
       var overlay = document.getElementById("overlay");
-      var video = document.getElementById("myvideo");
+      var video   = document.getElementById("myvideo");
       var sceneEl = document.querySelector("a-scene");
+
+      // Hide loading screen and show tap prompt once A-Frame is ready
+      sceneEl.addEventListener("loaded", function () {
+        loading.style.display = "none";
+        overlay.style.display = "flex";
+      });
 
       overlay.addEventListener("click", function () {
         overlay.style.display = "none";
