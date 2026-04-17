@@ -23,7 +23,12 @@
       padding: 2rem;
       box-sizing: border-box;
     }
-    #start-overlay p { font-size: 1.1rem; max-width: 280px; line-height: 1.6; }
+    #start-overlay p {
+      font-size: 1.1rem;
+      max-width: 280px;
+      line-height: 1.6;
+      margin: 0;
+    }
     #start-overlay button {
       margin-top: 2rem;
       padding: 1rem 2.5rem;
@@ -34,23 +39,13 @@
       border-radius: 8px;
       cursor: pointer;
     }
-    .spinner {
-      width: 48px; height: 48px;
-      border: 4px solid rgba(255,255,255,0.15);
-      border-top-color: white;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      margin-bottom: 1.5rem;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
 
   <div id="start-overlay">
-    <div class="spinner" id="spinner"></div>
-    <p id="overlay-text" style="opacity:0.6;">A carregar...</p>
-    <button id="start-btn" style="display:none;">Toque para come&#231;ar</button>
+    <p>Aponte a câmara para a imagem marcadora para ver a experiência de realidade aumentada.</p>
+    <button id="start-btn">Toque para começar</button>
   </div>
 
   <a-scene
@@ -59,41 +54,50 @@
     device-orientation-permission-ui="enabled: false">
 
     <a-assets>
-      <video id="myvideo" src="./Login.mp4"
-        loop muted playsinline webkit-playsinline preload="auto">
-      </video>
+      <video id="v0" src="./Login.mp4"      loop muted playsinline webkit-playsinline preload="auto"></video>
+      <video id="v1" src="./Agua.mp4"       loop muted playsinline webkit-playsinline preload="auto"></video>
+      <video id="v2" src="./Energia.mp4"    loop muted playsinline webkit-playsinline preload="auto"></video>
+      <video id="v3" src="./Mobilidade.mp4" loop muted playsinline webkit-playsinline preload="auto"></video>
+      <video id="v4" src="./Residuos.mp4"   loop muted playsinline webkit-playsinline preload="auto"></video>
+      <video id="v5" src="./Sobreapp.mp4"   loop muted playsinline webkit-playsinline preload="auto"></video>
     </a-assets>
 
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
     <a-entity mindar-image-target="targetIndex: 0">
-      <a-video
-        src="#myvideo"
-        position="0 0 0"
-        width="1" height="1">
-      </a-video>
+      <a-video src="#v0" position="0 0 0" width="1" height="1"></a-video>
+    </a-entity>
+
+    <a-entity mindar-image-target="targetIndex: 1">
+      <a-video src="#v1" position="0 0 0" width="1" height="1"></a-video>
+    </a-entity>
+
+    <a-entity mindar-image-target="targetIndex: 2">
+      <a-video src="#v2" position="0 0 0" width="1" height="1"></a-video>
+    </a-entity>
+
+    <a-entity mindar-image-target="targetIndex: 3">
+      <a-video src="#v3" position="0 0 0" width="1" height="1"></a-video>
+    </a-entity>
+
+    <a-entity mindar-image-target="targetIndex: 4">
+      <a-video src="#v4" position="0 0 0" width="1" height="1"></a-video>
+    </a-entity>
+
+    <a-entity mindar-image-target="targetIndex: 5">
+      <a-video src="#v5" position="0 0 0" width="1" height="1"></a-video>
     </a-entity>
 
   </a-scene>
 
   <script>
-    var sceneEl = document.querySelector("a-scene");
-    var spinner = document.getElementById("spinner");
-    var overlayText = document.getElementById("overlay-text");
-    var startBtn = document.getElementById("start-btn");
-
-    // Once A-Frame is ready, hide spinner and show button
-    sceneEl.addEventListener("loaded", function () {
-      spinner.style.display = "none";
-      overlayText.textContent = "Aponte a c\u00e2mara para o marcador para ver a experi\u00eancia.";
-      overlayText.style.opacity = "1";
-      startBtn.style.display = "inline-block";
-    });
-
-    startBtn.addEventListener("click", function () {
-      var vid = document.getElementById("myvideo");
-      vid.play().catch(function(e) { console.warn("play() failed:", e); });
-      document.getElementById("start-overlay").style.display = "none";
+    document.getElementById('start-btn').addEventListener('click', function () {
+      ['v0','v1','v2','v3','v4','v5'].forEach(function(id) {
+        var vid = document.getElementById(id);
+        vid.play().catch(function(e) { console.warn('play() failed for ' + id + ':', e); });
+        vid.pause();
+      });
+      document.getElementById('start-overlay').style.display = 'none';
     });
   </script>
 
