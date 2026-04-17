@@ -44,8 +44,8 @@
 <body>
 
   <div id="start-overlay">
-    <p>Aponte a câmara para a imagem marcadora para ver a experiência de realidade aumentada.</p>
-    <button id="start-btn">Toque para começar</button>
+    <p>Aponte a c&#226;mara para a imagem marcadora para ver a experi&#234;ncia de realidade aumentada.</p>
+    <button id="start-btn">Toque para come&#231;ar</button>
   </div>
 
   <a-scene
@@ -64,41 +64,62 @@
 
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-    <a-entity mindar-image-target="targetIndex: 0">
+    <a-entity id="target0" mindar-image-target="targetIndex: 0">
       <a-video src="#v0" position="0 0 0" width="1" height="1"></a-video>
     </a-entity>
 
-    <a-entity mindar-image-target="targetIndex: 1">
+    <a-entity id="target1" mindar-image-target="targetIndex: 1">
       <a-video src="#v1" position="0 0 0" width="1" height="1"></a-video>
     </a-entity>
 
-    <a-entity mindar-image-target="targetIndex: 2">
+    <a-entity id="target2" mindar-image-target="targetIndex: 2">
       <a-video src="#v2" position="0 0 0" width="1" height="1"></a-video>
     </a-entity>
 
-    <a-entity mindar-image-target="targetIndex: 3">
+    <a-entity id="target3" mindar-image-target="targetIndex: 3">
       <a-video src="#v3" position="0 0 0" width="1" height="1"></a-video>
     </a-entity>
 
-    <a-entity mindar-image-target="targetIndex: 4">
+    <a-entity id="target4" mindar-image-target="targetIndex: 4">
       <a-video src="#v4" position="0 0 0" width="1" height="1"></a-video>
     </a-entity>
 
-    <a-entity mindar-image-target="targetIndex: 5">
+    <a-entity id="target5" mindar-image-target="targetIndex: 5">
       <a-video src="#v5" position="0 0 0" width="1" height="1"></a-video>
     </a-entity>
 
   </a-scene>
 
   <script>
+    var videos = ['v0','v1','v2','v3','v4','v5'];
+
+    // Tap to start: unlock all videos with a gesture, then pause them
     document.getElementById('start-btn').addEventListener('click', function () {
-      ['v0','v1','v2','v3','v4','v5'].forEach(function(id) {
+      videos.forEach(function(id) {
         var vid = document.getElementById(id);
-        vid.play().catch(function(e) { console.warn('play() failed for ' + id + ':', e); });
+        vid.play().catch(function(e) { console.warn('unlock failed for ' + id + ':', e); });
         vid.pause();
+        vid.currentTime = 0;
       });
       document.getElementById('start-overlay').style.display = 'none';
     });
+
+    // Play the right video when its marker is found
+    for (var i = 0; i < 6; i++) {
+      (function(idx) {
+        var entity = document.getElementById('target' + idx);
+        var vid    = document.getElementById('v' + idx);
+
+        entity.addEventListener('targetFound', function () {
+          vid.play().catch(function(e) { console.warn('play failed for v' + idx + ':', e); });
+        });
+
+        entity.addEventListener('targetLost', function () {
+          vid.pause();
+          vid.currentTime = 0;
+        });
+      })(i);
+    }
   </script>
 
 </body>
